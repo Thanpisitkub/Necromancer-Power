@@ -15,7 +15,13 @@ jobs:
         with:
           gradle-version: 8.1.1
       - name: Build
-        run: gradle build --no-daemon
+        run: |
+          set -o pipefail
+          gradle build --no-daemon 2>&1 | tee build.log
+      - name: Report errors
+        if: failure()
+        run: |
+          grep -nE "error:|FAILED|What went wrong|Could not|Exception|warning: \[" -A3 build.log | head -60 | python3 -c "import sys;t=sys.stdin.read().replace('%','%25').replace('\r','').replace('\n','%0A');print('::error title=Build log::'+t)"
       - uses: actions/upload-artifact@v4
         with:
           name: necromancer-jar
