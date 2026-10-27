@@ -23,6 +23,8 @@ public final class NecroConfig {
     public static final ForgeConfigSpec.IntValue SLOW_LEVEL;
     public static final ForgeConfigSpec.IntValue WEAK_LEVEL;
     public static final ForgeConfigSpec.IntValue NAUSEA_LEVEL;
+    public static final ForgeConfigSpec.BooleanValue SPARE_MINIONS;
+    public static final ForgeConfigSpec.BooleanValue SPARE_MARKED;
 
     public static final ForgeConfigSpec.IntValue MARK_RANGE;
     public static final ForgeConfigSpec.ConfigValue<String> MARK_COLOR;
@@ -50,9 +52,11 @@ public final class NecroConfig {
         SLOW_LEVEL = b.comment("Slowness level (1 = I)").defineInRange("slownessLevel", 3, 1, 10);
         WEAK_LEVEL = b.comment("Weakness level (1 = I)").defineInRange("weaknessLevel", 3, 1, 10);
         NAUSEA_LEVEL = b.comment("Nausea level (1 = I)").defineInRange("nauseaLevel", 2, 1, 10);
+        SPARE_MINIONS = b.comment("true = your own summoned monsters are NOT affected (default: everyone except you is hit)").define("spareOwnMinions", false);
+        SPARE_MARKED = b.comment("true = players you marked are NOT affected (default: everyone except you is hit)").define("spareMarkedPlayers", false);
         b.pop();
 
-        b.comment("Mark (right-click a player)").push("mark");
+        b.comment("Mark (left-click a player)").push("mark");
         MARK_RANGE = b.comment("Blocks within which marked players glow for the necromancer").defineInRange("range", 50, 1, 128);
         MARK_COLOR = b.comment("Glow colour: dark_purple or light_purple (any vanilla colour name works)").define("glowColor", "dark_purple");
         b.pop();

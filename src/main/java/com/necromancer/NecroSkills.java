@@ -77,9 +77,9 @@ public final class NecroSkills {
 
         NecroState.setNextSummon(p.getUUID(), now + NecroConfig.SUMMON_COOLDOWN_SECONDS.get() * 20);
 
-        level.sendParticles(ModParticles.RUNE_SEAL.get(), p.getX(), p.getY() + 0.02D, p.getZ(), 0, 3.5D, 0.0D, 0.0D, 1.0D);
-        level.sendParticles(ModParticles.SUMMON_CIRCLE.get(), p.getX(), p.getY() + 0.9D, p.getZ(), 0, 0.0D, 0.0D, 0.0D, 0.0D);
-        level.sendParticles(ModParticles.DARK_SMOKE.get(), p.getX(), p.getY() + 0.3D, p.getZ(), 14, 1.2D, 0.2D, 1.2D, 0.02D);
+        // 3D summoning circle (the x "velocity" is the circle radius)
+        level.sendParticles(ModParticles.MAGIC_CIRCLE_3D.get(), p.getX(), p.getY() + 0.02D, p.getZ(), 0, 3.5D, 0.0D, 0.0D, 1.0D);
+        level.sendParticles(ModParticles.FIREBALL_3D.get(), p.getX(), p.getY() + 0.5D, p.getZ(), 8, 1.6D, 0.3D, 1.6D, 0.06D);
         msg(p, "§5[Summon] §fเรียกกองทัพอันเดดแล้ว §d(" + spawned + ")");
         return spawned;
     }
@@ -117,9 +117,7 @@ public final class NecroSkills {
             level.addFreshEntity(mob);
         }
 
-        level.sendParticles(ModParticles.SUMMON_BURST.get(), spot.x, spot.y + 0.1D, spot.z, 0, 0.0D, 0.0D, 0.0D, 0.0D);
-        level.sendParticles(ModParticles.CRYSTAL_SHARD.get(), spot.x, spot.y + 0.4D, spot.z, 6, 0.4D, 0.2D, 0.4D, 0.05D);
-        level.sendParticles(ModParticles.DARK_SPARK.get(), spot.x, spot.y + 0.8D, spot.z, 5, 0.3D, 0.5D, 0.3D, 0.04D);
+        level.sendParticles(ModParticles.FIREBALL_3D.get(), spot.x, spot.y + 0.6D, spot.z, 3, 0.25D, 0.2D, 0.25D, 0.05D);
         return true;
     }
 
@@ -212,21 +210,21 @@ public final class NecroSkills {
         double radiusSq = radius * radius;
         int ticks = NecroConfig.EFFECT_SECONDS.get() * 20;
 
+        // everyone around the caster except the caster (see config for optional exceptions)
         List<LivingEntity> targets = level.getEntitiesOfClass(LivingEntity.class, p.getBoundingBox().inflate(radius),
-                e -> NecroMinions.isEnemyOf(p, e) && e.distanceToSqr(p) <= radiusSq);
+                e -> NecroMinions.isDarkMagicTarget(p, e) && e.distanceToSqr(p) <= radiusSq);
         for (LivingEntity e : targets) {
             e.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, ticks, NecroConfig.SLOW_LEVEL.get() - 1), p);
             e.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, ticks, NecroConfig.WEAK_LEVEL.get() - 1), p);
             e.addEffect(new MobEffectInstance(MobEffects.CONFUSION, ticks, NecroConfig.NAUSEA_LEVEL.get() - 1), p);
-            level.sendParticles(ModParticles.SLASH.get(), e.getX(), e.getY() + e.getBbHeight() * 0.5D, e.getZ(), 0, 0.0D, 0.0D, 0.0D, 0.0D);
-            level.sendParticles(ModParticles.DARK_SPARK.get(), e.getX(), e.getY() + e.getBbHeight() * 0.5D, e.getZ(), 8, 0.35D, 0.5D, 0.35D, 0.05D);
+            level.sendParticles(ModParticles.FIREBALL_3D.get(), e.getX(), e.getY() + e.getBbHeight() * 0.5D, e.getZ(),
+                    2, 0.25D, 0.3D, 0.25D, 0.04D);
         }
 
-        level.sendParticles(ModParticles.RUNE_SEAL.get(), p.getX(), p.getY() + 0.02D, p.getZ(), 0, radius, 0.0D, 0.0D, 1.0D);
-        level.sendParticles(ModParticles.ENERGY_RING.get(), p.getX(), p.getY() + 1.0D, p.getZ(), 0, 0.0D, 0.0D, 0.0D, 0.0D);
-        level.sendParticles(ModParticles.RUNE_RING.get(), p.getX(), p.getY() + 0.3D, p.getZ(), 0, 0.0D, 0.0D, 0.0D, 0.0D);
-        level.sendParticles(ModParticles.DARK_ORB.get(), p.getX(), p.getY() + 0.5D, p.getZ(), 24, radius * 0.4D, 0.4D, radius * 0.4D, 0.03D);
-        level.sendParticles(ModParticles.DARK_SMOKE.get(), p.getX(), p.getY() + 0.4D, p.getZ(), 12, radius * 0.3D, 0.2D, radius * 0.3D, 0.02D);
+        // 3D magic circle with the real radius, plus fireballs spreading through the area
+        level.sendParticles(ModParticles.MAGIC_CIRCLE_3D.get(), p.getX(), p.getY() + 0.02D, p.getZ(), 0, radius, 0.0D, 0.0D, 1.0D);
+        level.sendParticles(ModParticles.FIREBALL_3D.get(), p.getX(), p.getY() + 0.5D, p.getZ(),
+                Math.min(24, 6 + (int) radius), radius * 0.4D, 0.4D, radius * 0.4D, 0.05D);
         msg(p, "§5[Dark Magic] §fโจมตีศัตรู §d" + targets.size() + " §fเป้าหมาย");
         return targets.size();
     }

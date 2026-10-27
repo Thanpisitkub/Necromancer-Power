@@ -22,6 +22,10 @@ public final class NecroState {
     private static final Map<UUID, Integer> NEXT_SUMMON = new HashMap<>();
     private static final Map<UUID, Integer> NEXT_DARK = new HashMap<>();
 
+    /** owner -> (attacker -> tick until which the attacker counts as a threat to the owner) */
+    private static final Map<UUID, Map<UUID, Integer>> THREATS = new HashMap<>();
+    private static final Map<UUID, Integer> LAST_MARK_CLICK = new HashMap<>();
+
     /** Currently loaded minions and their mounts. */
     private static final Set<Entity> LOADED = new LinkedHashSet<>();
 
@@ -49,6 +53,34 @@ public final class NecroState {
 
     public static void setNextDark(UUID id, int tick) {
         NEXT_DARK.put(id, tick);
+    }
+
+    public static void addThreat(UUID owner, UUID attacker, int untilTick) {
+        Map<UUID, Integer> m = THREATS.computeIfAbsent(owner, k -> new HashMap<>());
+        m.put(attacker, untilTick);
+        if (m.size() > 32) {
+            int now = untilTick - 200;
+            m.values().removeIf(t -> t < now);
+        }
+    }
+
+    public static boolean isThreat(UUID owner, UUID attacker, int now) {
+        Map<UUID, Integer> m = THREATS.get(owner);
+        if (m == null) {
+            return false;
+        }
+        Integer until = m.get(attacker);
+        return until != null && until >= now;
+    }
+
+    /** Left-click marking can fire several times per combo; only accept one toggle per 8 ticks. */
+    public static boolean markClickReady(UUID owner, int now) {
+        Integer last = LAST_MARK_CLICK.get(owner);
+        if (last != null && now - last < 8) {
+            return false;
+        }
+        LAST_MARK_CLICK.put(owner, now);
+        return true;
     }
 
     public static boolean isMinion(Entity e) {
@@ -92,12 +124,16 @@ public final class NecroState {
 
     public static void forgetPlayer(UUID id) {
         LAST_PING.remove(id);
+        THREATS.remove(id);
+        LAST_MARK_CLICK.remove(id);
     }
 
     public static void clearAll() {
         LAST_PING.clear();
         NEXT_SUMMON.clear();
         NEXT_DARK.clear();
+        THREATS.clear();
+        LAST_MARK_CLICK.clear();
         LOADED.clear();
     }
 

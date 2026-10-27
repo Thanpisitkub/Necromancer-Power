@@ -23,6 +23,11 @@ public final class ModParticles {
     public static final RegistryObject<SimpleParticleType> DARK_ORB = reg("dark_orb");
     public static final RegistryObject<SimpleParticleType> DARK_SPARK = reg("dark_spark");
 
+    /** Real 3D meshes (see client/MagicCircle3DParticle and client/Fireball3DParticle). */
+    public static final RegistryObject<SimpleParticleType> MAGIC_CIRCLE_3D = reg("magic_circle_3d");
+    public static final RegistryObject<SimpleParticleType> FIREBALL_3D = reg("fireball_3d");
+    public static final RegistryObject<SimpleParticleType> FIREBALL_HEAD = reg("fireball_head");
+
     private static RegistryObject<SimpleParticleType> reg(String name) {
         return PARTICLES.register(name, () -> new SimpleParticleType(true));
     }

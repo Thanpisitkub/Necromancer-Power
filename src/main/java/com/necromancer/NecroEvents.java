@@ -4,8 +4,6 @@ import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -18,9 +16,10 @@ import net.minecraftforge.event.entity.living.LivingChangeTargetEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.living.MobEffectEvent;
+import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.server.ServerStoppedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -102,7 +101,19 @@ public final class NecroEvents {
     @SubscribeEvent
     public static void onAttack(LivingAttackEvent event) {
         Entity attacker = event.getSource().getEntity();
-        if (attacker == null || !NecroState.isMinion(attacker)) {
+        if (attacker == null) {
+            return;
+        }
+
+        // a necromancer's melee hit on another player is a mark click (covers mods that skip AttackEntityEvent)
+        if (attacker instanceof ServerPlayer owner && event.getEntity() instanceof ServerPlayer target
+                && owner != target && event.getSource().getDirectEntity() == owner && NecroState.isNecromancer(owner)) {
+            markClick(owner, target);
+            event.setCanceled(true);
+            return;
+        }
+
+        if (!NecroState.isMinion(attacker)) {
             return;
         }
         UUID owner = NecroState.ownerOf(attacker);
@@ -113,6 +124,18 @@ public final class NecroEvents {
         }
         if (!NecroMinions.isValidTarget(server, owner, attacker, victim)) {
             event.setCanceled(true);
+        }
+    }
+
+    /** Whoever hurts the necromancer is attacked by every minion right away. */
+    @SubscribeEvent
+    public static void onOwnerHurt(LivingHurtEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer owner) || !NecroState.isNecromancer(owner)) {
+            return;
+        }
+        MinecraftServer server = owner.getServer();
+        if (server != null) {
+            NecroMinions.defend(server, owner, event.getSource().getEntity());
         }
     }
 
@@ -155,25 +178,28 @@ public final class NecroEvents {
         }
     }
 
-    // ---------------------------------------------------------------- marking (right-click a player)
+    // ---------------------------------------------------------------- marking (left-click a player)
 
     @SubscribeEvent
-    public static void onInteract(PlayerInteractEvent.EntityInteract event) {
-        if (event.getLevel().isClientSide() || event.getHand() != InteractionHand.MAIN_HAND) {
-            return;
-        }
+    public static void onLeftClick(AttackEntityEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer owner) || !(event.getTarget() instanceof ServerPlayer target)) {
             return;
         }
         if (owner == target || !NecroState.isNecromancer(owner)) {
             return;
         }
+        markClick(owner, target);
+        event.setCanceled(true);
+    }
+
+    private static void markClick(ServerPlayer owner, ServerPlayer target) {
+        if (!NecroState.markClickReady(owner.getUUID(), owner.server.getTickCount())) {
+            return;
+        }
         boolean marked = MarkSystem.toggle(owner, target);
         owner.displayClientMessage(Component.literal(marked
                 ? "§5[Mark] §fมาร์ค §d" + target.getName().getString() + " §fแล้ว (Monster จะไม่โจมตี)"
                 : "§5[Mark] §fยกเลิกมาร์ค §d" + target.getName().getString() + " §fแล้ว"), true);
-        event.setCancellationResult(InteractionResult.SUCCESS);
-        event.setCanceled(true);
     }
 
     @SubscribeEvent
