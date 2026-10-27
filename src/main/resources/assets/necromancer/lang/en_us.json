@@ -1,0 +1,10 @@
+{
+  "origin.necromancer.necromancer.name": "Necromancer",
+  "origin.necromancer.necromancer.description": "A master of the dead. Raise an undead army and curse your enemies with dark magic.",
+  "power.necromancer.summon.name": "Summon",
+  "power.necromancer.summon.description": "Primary skill key (cooldown 1 min). Raise Zombies, Skeletons and Wither Skeletons (some mounted on skeleton horses) in iron gear: 500 HP, 1.5x speed, 1.5x damage, 1.1x toughness. They never attack you or players you marked, fight other monsters, and have purple fire on their heads. You cannot summon again until they are all dead. Right-click a player to mark them (purple glow, only you can see it within 50 blocks).",
+  "power.necromancer.dark_magic.name": "Dark Magic",
+  "power.necromancer.dark_magic.description": "Secondary skill key (cooldown 10 s). Enemies around you get Slowness III, Weakness III and Nausea II for 10 seconds.",
+  "power.necromancer.presence.name": "Necromancer",
+  "power.necromancer.presence.description": "Internal marker power."
+}

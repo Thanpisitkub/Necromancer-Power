@@ -1,0 +1,32 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="MIT"
+
+[[mods]]
+modId="necromancer"
+version="1.0.0"
+displayName="Necromancer Origin"
+description='''
+Origin "Necromancer" for Origins (Forge 1.20.1): summon an undead army and curse your enemies.
+'''
+
+[[dependencies.necromancer]]
+    modId="forge"
+    mandatory=true
+    versionRange="[47,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.necromancer]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.20.1,1.21)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.necromancer]]
+    modId="origins"
+    mandatory=false
+    versionRange="*"
+    ordering="AFTER"
+    side="BOTH"

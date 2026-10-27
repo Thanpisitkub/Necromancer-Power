@@ -1,0 +1,10 @@
+{
+  "origin.necromancer.necromancer.name": "Necromancer",
+  "origin.necromancer.necromancer.description": "ผู้เรียกกองทัพอันเดด เสกมอนสเตอร์มาสู้แทนและสาปศัตรูด้วยเวทมนตร์มืด",
+  "power.necromancer.summon.name": "Summon",
+  "power.necromancer.summon.description": "ปุ่มสกิลหลัก (คูลดาวน์ 1 นาที) เสก Zombie, Skeleton, Wither Skeleton (บางตัวขี่ม้ากระดูก) ใส่เกราะเหล็กถือดาบเหล็ก เลือด 500 วิ่งเร็ว 1.5 เท่า โจมตีแรง 1.5 เท่า แข็งแกร่ง 1.1 เท่า จะไม่โจมตีเราและคนที่มาร์ค ตี Monster อื่น มีไฟสีม่วงที่หัว ถ้ายังมีตัวที่เสกอยู่จะเสกใหม่ไม่ได้จนกว่าจะตายหมด คลิกขวาที่ผู้เล่นเพื่อมาร์ค (ส่องสว่างสีม่วง เห็นแค่เรา ในระยะ 50 บล็อก)",
+  "power.necromancer.dark_magic.name": "Dark Magic",
+  "power.necromancer.dark_magic.description": "ปุ่มสกิลรอง (คูลดาวน์ 10 วินาที) ศัตรูรอบตัวติดเดินช้า 3 อ่อนแอ 3 มึนหัว 2 เป็นเวลา 10 วินาที",
+  "power.necromancer.presence.name": "Necromancer",
+  "power.necromancer.presence.description": "พลังภายในสำหรับระบุว่าเป็น Necromancer"
+}

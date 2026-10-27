@@ -1,0 +1,9 @@
+{
+  "type": "apoli:action_over_time",
+  "entity_action": {
+    "type": "apoli:execute_command",
+    "command": "necromancer ping"
+  },
+  "interval": 10,
+  "hidden": true
+}

@@ -1,0 +1,12 @@
+{
+  "powers": [
+    "necromancer:summon",
+    "necromancer:dark_magic",
+    "necromancer:presence"
+  ],
+  "icon": {
+    "item": "minecraft:wither_skeleton_skull"
+  },
+  "order": 90,
+  "impact": 3
+}
